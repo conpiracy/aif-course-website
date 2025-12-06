@@ -37,17 +37,17 @@ export default function App() {
 
   const currentLesson = lessons[currentLessonIndex];
 
-  const allParagraphs = useRef<Array<{ type: string; data: any; sectionIndex: number }>>([]);
+  const allParagraphs = useRef<Array<{ paragraph: any; sectionIndex: number }>>([]);
   const sections = useRef<Array<{ name: string; startIndex: number }>>([]);
 
   useEffect(() => {
-    const paragraphs: Array<{ type: string; data: any; sectionIndex: number }> = [];
+    const paragraphs: Array<{ paragraph: any; sectionIndex: number }> = [];
     const secs: Array<{ name: string; startIndex: number }> = [];
 
     currentLesson.sections.forEach((section, sIndex) => {
-      secs.push({ name: section.name, startIndex: paragraphs.length });
-      section.items.forEach(item => {
-        paragraphs.push({ type: item.type, data: item, sectionIndex: sIndex });
+      secs.push({ name: section.title, startIndex: paragraphs.length });
+      section.paragraphs.forEach(paragraph => {
+        paragraphs.push({ paragraph, sectionIndex: sIndex });
       });
     });
 
@@ -214,16 +214,9 @@ export default function App() {
                               ${!isCurrent && !isPast ? 'text-muted-foreground/40' : ''}
                             `}
                           >
-                            {item.type === 'paragraph' && (
-                              <p className="text-xl leading-relaxed">
-                                {renderParagraphText(item.data.paragraph.text, currentLesson.keywords)}
-                              </p>
-                            )}
-                            {item.type === 'code' && (
-                              <pre className="bg-muted/50 border border-border rounded-lg p-6 overflow-x-auto">
-                                <code className="text-sm">{item.data.code.text}</code>
-                              </pre>
-                            )}
+                            <p className="text-xl leading-relaxed">
+                              {renderParagraphText(item.paragraph.text, currentLesson.keywords)}
+                            </p>
                           </div>
                         );
                       })}
