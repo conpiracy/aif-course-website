@@ -1,15 +1,42 @@
 /* AIF Course - Kit Langton Style Teleprompter */
 @import "tailwindcss";
 
-:root {
-  --bg: #000000;
-  --text-dim: #6B7280;
-  --text-current: #ffffff;
-  --text-past: #9CA3AF;
-  --accent: #fbbf24;
-  --code-bg: rgba(55, 65, 81, 0.4);
-  --code-border: rgba(107, 114, 128, 0.5);
-  --font-mono: 'JetBrains Mono', 'SF Mono', Monaco, monospace;
+@layer base {
+  :root {
+    --background: 0 0% 0%;
+    --foreground: 0 0% 100%;
+    --card: 0 0% 3%;
+    --card-foreground: 0 0% 100%;
+    --popover: 0 0% 5%;
+    --popover-foreground: 0 0% 100%;
+    --primary: 45 93% 57%;
+    --primary-foreground: 0 0% 0%;
+    --secondary: 0 0% 10%;
+    --secondary-foreground: 0 0% 100%;
+    --muted: 0 0% 10%;
+    --muted-foreground: 0 0% 60%;
+    --accent: 45 93% 57%;
+    --accent-foreground: 0 0% 0%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 0 0% 15%;
+    --input: 0 0% 15%;
+    --ring: 45 93% 57%;
+    --chart-1: 45 93% 57%;
+    --chart-2: 0 0% 60%;
+    --chart-3: 0 0% 40%;
+    --chart-4: 0 0% 20%;
+    --chart-5: 0 0% 10%;
+    --radius: 0.5rem;
+
+    --bg: #000000;
+    --text-dim: #6B7280;
+    --text-current: #ffffff;
+    --text-past: #9CA3AF;
+    --code-bg: rgba(55, 65, 81, 0.4);
+    --code-border: rgba(107, 114, 128, 0.5);
+    --font-mono: 'JetBrains Mono', 'SF Mono', Monaco, monospace;
+  }
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }

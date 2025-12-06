@@ -1,13 +1,8 @@
-/**
- * Next Lesson CTA Component
- *
- * Inline component that appears at the end of lesson content
- * with a call-to-action to continue to the next lesson.
- */
-
 import React from 'react';
 import { motion } from 'motion/react';
-import { ArrowRight, CheckCircle2 } from 'lucide-react';
+import { Button } from './ui/button';
+import { Card } from './ui/card';
+import { ArrowRight, CheckCircle2, Sparkles } from 'lucide-react';
 
 interface NextLessonCTAProps {
   nextLessonTitle: string | null;
@@ -30,31 +25,59 @@ export function NextLessonCTA({
 
   return (
     <motion.div
-      className="next-lesson-cta"
-      initial={{ opacity: 0, y: 10 }}
+      className="my-12"
+      initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: 10 }}
-      transition={{ duration: 0.3 }}
+      exit={{ opacity: 0, y: 20 }}
+      transition={{ duration: 0.4 }}
     >
       {isLastLesson ? (
-        <div className="cta-complete">
-          <CheckCircle2 className="cta-icon" size={20} />
-          <div className="cta-text">
-            <span className="cta-label">Course Complete</span>
-            <span className="cta-description">You've finished all available lessons</span>
-          </div>
-        </div>
-      ) : (
-        <button className="cta-button" onClick={onNextLesson}>
-          <div className="cta-content">
-            <span className="cta-label">Continue</span>
-            <div className="cta-next-info">
-              <span className="next-id">{nextLessonId}</span>
-              <span className="next-title-text">{nextLessonTitle}</span>
+        <Card className="bg-gradient-to-br from-primary/10 to-primary/5 border-primary/20">
+          <div className="p-8 flex items-center gap-4">
+            <div className="w-12 h-12 rounded-full bg-primary/20 flex items-center justify-center">
+              <CheckCircle2 className="text-primary" size={24} />
+            </div>
+            <div className="flex-1">
+              <h3 className="text-lg font-semibold text-foreground mb-1 flex items-center gap-2">
+                Course Complete
+                <Sparkles size={16} className="text-primary" />
+              </h3>
+              <p className="text-sm text-muted-foreground">
+                You've finished all available lessons. Great work!
+              </p>
             </div>
           </div>
-          <ArrowRight className="cta-arrow" size={20} />
-        </button>
+        </Card>
+      ) : (
+        <Card className="bg-card border-border hover:border-primary/50 transition-all group cursor-pointer">
+          <Button
+            variant="ghost"
+            className="w-full h-auto p-0 hover:bg-transparent"
+            onClick={onNextLesson}
+          >
+            <div className="p-6 w-full flex items-center justify-between">
+              <div className="flex items-center gap-4">
+                <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center group-hover:bg-primary/20 transition-colors">
+                  <ArrowRight className="text-primary" size={20} />
+                </div>
+                <div className="text-left">
+                  <div className="text-xs font-semibold tracking-widest text-primary/70 mb-1 uppercase">
+                    Next Lesson
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs font-mono font-semibold text-primary bg-primary/10 px-2 py-0.5 rounded">
+                      {nextLessonId}
+                    </span>
+                    <span className="text-sm font-medium text-foreground">
+                      {nextLessonTitle}
+                    </span>
+                  </div>
+                </div>
+              </div>
+              <ArrowRight className="text-muted-foreground group-hover:text-primary group-hover:translate-x-1 transition-all" size={20} />
+            </div>
+          </Button>
+        </Card>
       )}
     </motion.div>
   );
