@@ -9,6 +9,7 @@
 import React, { useState, useCallback } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { courseData, type Lesson } from '../course-data';
+import { ChevronRight } from 'lucide-react';
 
 interface LessonSidebarProps {
   currentLessonIndex: number;
@@ -59,9 +60,7 @@ export function LessonSidebar({ currentLessonIndex, onLessonSelect }: LessonSide
           animate={{ rotate: isExpanded ? 180 : 0 }}
           transition={{ type: 'spring', stiffness: 300, damping: 25 }}
         >
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-            <path d="M9 18l6-6-6-6" />
-          </svg>
+          <ChevronRight size={20} />
         </motion.div>
       </button>
 

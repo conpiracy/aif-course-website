@@ -1,12 +1,13 @@
 /**
  * Next Lesson CTA Component
  *
- * Footer component that appears at the end of each lesson
+ * Inline component that appears at the end of lesson content
  * with a call-to-action to continue to the next lesson.
  */
 
 import React from 'react';
 import { motion } from 'motion/react';
+import { ArrowRight, CheckCircle2 } from 'lucide-react';
 
 interface NextLessonCTAProps {
   nextLessonTitle: string | null;
@@ -24,25 +25,20 @@ export function NextLessonCTA({
   isLastLesson
 }: NextLessonCTAProps) {
   if (!isInLastSection) {
-    return null; // Only show when in the last section
+    return null;
   }
 
   return (
     <motion.div
       className="next-lesson-cta"
-      initial={{ opacity: 0, scale: 0.95 }}
-      animate={{ opacity: 1, scale: 1 }}
-      exit={{ opacity: 0, scale: 0.95 }}
-      transition={{ type: 'spring', stiffness: 200, damping: 20 }}
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: 10 }}
+      transition={{ duration: 0.3 }}
     >
       {isLastLesson ? (
         <div className="cta-complete">
-          <div className="cta-icon">
-            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
-              <polyline points="22 4 12 14.01 9 11.01" />
-            </svg>
-          </div>
+          <CheckCircle2 className="cta-icon" size={20} />
           <div className="cta-text">
             <span className="cta-label">Course Complete</span>
             <span className="cta-description">You've finished all available lessons</span>
@@ -51,21 +47,13 @@ export function NextLessonCTA({
       ) : (
         <button className="cta-button" onClick={onNextLesson}>
           <div className="cta-content">
-            <span className="cta-label">Next Lesson</span>
+            <span className="cta-label">Continue</span>
             <div className="cta-next-info">
               <span className="next-id">{nextLessonId}</span>
               <span className="next-title-text">{nextLessonTitle}</span>
             </div>
           </div>
-          <motion.div
-            className="cta-arrow"
-            animate={{ x: [0, 5, 0] }}
-            transition={{ duration: 1.2, repeat: Infinity, ease: 'easeInOut' }}
-          >
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <path d="M5 12h14M12 5l7 7-7 7" />
-            </svg>
-          </motion.div>
+          <ArrowRight className="cta-arrow" size={20} />
         </button>
       )}
     </motion.div>

@@ -8,12 +8,12 @@
  */
 
 import React, { useState, useCallback, useEffect, useRef } from 'react';
-import { AnimatePresence } from 'motion/react';
 import { getAllLessons, type Lesson } from './course-data';
 import { VisualizationPanel } from './VisualizationPanel';
 import { AnimatedNumber } from './components/ui/animated-number';
 import { LessonSidebar } from './components/LessonSidebar';
 import { NextLessonCTA } from './components/NextLessonCTA';
+import { Play, Pause, RotateCcw, Minus, Plus } from 'lucide-react';
 
 // Render paragraph text with keywords wrapped in code spans
 function renderParagraphText(text: string, keywords: string[]) {
@@ -360,6 +360,15 @@ export function App() {
               </React.Fragment>
             );
           })}
+
+          {/* Next lesson CTA - inline at the end of content */}
+          <NextLessonCTA
+            nextLessonTitle={nextLesson?.title || null}
+            nextLessonId={nextLesson?.id || null}
+            isInLastSection={isInLastSection}
+            onNextLesson={handleNextLesson}
+            isLastLesson={isLastLesson}
+          />
         </div>
 
         {/* Right column: Visualization */}
@@ -373,24 +382,24 @@ export function App() {
           onClick={togglePlay}
           title="Play/Pause (Space)"
         >
-          {isPlaying ? '⏸' : '▶'}
+          {isPlaying ? <Pause size={16} /> : <Play size={16} />}
         </button>
         <button className="ctrl-btn" onClick={reset} title="Reset (R)">
-          ↺
+          <RotateCcw size={16} />
         </button>
         <button
           className="ctrl-btn"
           onClick={() => setSpeed(s => Math.min(10000, s + 500))}
           title="Slower (-)"
         >
-          −
+          <Minus size={16} />
         </button>
         <button
           className="ctrl-btn"
           onClick={() => setSpeed(s => Math.max(1000, s - 500))}
           title="Faster (+)"
         >
-          +
+          <Plus size={16} />
         </button>
       </div>
 
@@ -416,17 +425,6 @@ export function App() {
           <span className="key">+−</span> Speed
         </span>
       </div>
-
-      {/* Next lesson CTA - appears when in the last section */}
-      <AnimatePresence>
-        <NextLessonCTA
-          nextLessonTitle={nextLesson?.title || null}
-          nextLessonId={nextLesson?.id || null}
-          isInLastSection={isInLastSection}
-          onNextLesson={handleNextLesson}
-          isLastLesson={isLastLesson}
-        />
-      </AnimatePresence>
     </div>
   );
 }
