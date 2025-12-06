@@ -22,8 +22,27 @@ html, body {
   line-height: 1.7;
   letter-spacing: 0.01em;
   height: 100%;
-  overflow: hidden;
   -webkit-font-smoothing: antialiased;
+}
+
+html.lenis, html.lenis body {
+  height: auto;
+}
+
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+
+.lenis.lenis-smooth [data-lenis-prevent] {
+  overscroll-behavior: contain;
+}
+
+.lenis.lenis-stopped {
+  overflow: hidden;
+}
+
+.lenis.lenis-scrolling iframe {
+  pointer-events: none;
 }
 
 #root { height: 100%; }
@@ -405,7 +424,6 @@ html, body {
    ============================================= */
 .teleprompter-content {
   overflow-y: auto;
-  scroll-behavior: smooth;
   padding: 20vh 0 30vh 0;
   border-right: 1px solid #1a1a1a;
 

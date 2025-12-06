@@ -8,6 +8,7 @@
  */
 
 import React, { useState, useCallback, useEffect, useRef } from 'react';
+import { ReactLenis } from 'lenis/react';
 import { getAllLessons, type Lesson } from './course-data';
 import { VisualizationPanel } from './VisualizationPanel';
 import { AnimatedNumber } from './components/ui/animated-number';
@@ -80,6 +81,37 @@ export function App() {
 
   const totalParagraphs = allParagraphs.length;
 
+  // Lenis scroll handler - navigate paragraphs based on scroll
+  const lastScrollY = useRef(0);
+  const scrollAccumulator = useRef(0);
+  const isNavigatingRef = useRef(false);
+
+  const handleScroll = useCallback((lenis: any) => {
+    const scrollDelta = lenis.scroll - lastScrollY.current;
+    lastScrollY.current = lenis.scroll;
+
+    if (isNavigatingRef.current) return;
+
+    scrollAccumulator.current += scrollDelta;
+
+    const threshold = 100;
+    if (Math.abs(scrollAccumulator.current) >= threshold) {
+      isNavigatingRef.current = true;
+
+      if (scrollAccumulator.current > 0) {
+        setCurrentParagraphIndex(prev => Math.min(totalParagraphs - 1, prev + 1));
+      } else {
+        setCurrentParagraphIndex(prev => Math.max(0, prev - 1));
+      }
+
+      scrollAccumulator.current = 0;
+
+      setTimeout(() => {
+        isNavigatingRef.current = false;
+      }, 300);
+    }
+  }, [totalParagraphs]);
+
   // Auto-scroll to current paragraph
   useEffect(() => {
     const el = paragraphRefs.current[currentParagraphIndex];
@@ -87,57 +119,6 @@ export function App() {
       el.scrollIntoView({ behavior: 'smooth', block: 'center' });
     }
   }, [currentParagraphIndex]);
-
-  // Scroll wheel navigation - sticky drag feel
-  useEffect(() => {
-    let accumulatedDelta = 0;
-    const threshold = 200; // Higher threshold = more "sticky" resistance
-    let isNavigating = false;
-    let cooldownTimeout: ReturnType<typeof setTimeout> | null = null;
-
-    const handleWheel = (e: WheelEvent) => {
-      e.preventDefault();
-
-      // During cooldown, ignore scroll
-      if (isNavigating) return;
-
-      // Accumulate scroll with decay for smoother feel
-      accumulatedDelta += e.deltaY * 0.3; // Dampen input
-
-      // Apply friction/decay
-      accumulatedDelta *= 0.95;
-
-      // Check if threshold reached
-      if (Math.abs(accumulatedDelta) >= threshold) {
-        isNavigating = true;
-
-        if (accumulatedDelta > 0) {
-          setCurrentParagraphIndex(prev => Math.min(totalParagraphs - 1, prev + 1));
-        } else {
-          setCurrentParagraphIndex(prev => Math.max(0, prev - 1));
-        }
-
-        // Reset and cooldown to prevent rapid scrolling
-        accumulatedDelta = 0;
-
-        cooldownTimeout = setTimeout(() => {
-          isNavigating = false;
-        }, 120); // 120ms cooldown between navigations
-      }
-    };
-
-    const container = document.querySelector('.teleprompter-content');
-    if (container) {
-      container.addEventListener('wheel', handleWheel, { passive: false });
-    }
-
-    return () => {
-      if (container) {
-        container.removeEventListener('wheel', handleWheel);
-      }
-      if (cooldownTimeout) clearTimeout(cooldownTimeout);
-    };
-  }, [totalParagraphs]);
 
   // Play/pause logic - advance by paragraph
   useEffect(() => {
@@ -280,12 +261,13 @@ export function App() {
   }, [sections, currentParagraphIndex]);
 
   return (
-    <div className="teleprompter">
-      {/* Progress bar */}
-      <div
-        className="teleprompter-progress"
-        style={{ '--progress': `${progress}%` } as React.CSSProperties}
-      />
+    <ReactLenis root options={{ lerp: 0.05, duration: 1.2, smoothWheel: true }}>
+      <div className="teleprompter">
+        {/* Progress bar */}
+        <div
+          className="teleprompter-progress"
+          style={{ '--progress': `${progress}%` } as React.CSSProperties}
+        />
 
       {/* Header */}
       <div className="teleprompter-header">
@@ -425,6 +407,7 @@ export function App() {
           <span className="key">+−</span> Speed
         </span>
       </div>
-    </div>
+      </div>
+    </ReactLenis>
   );
 }
