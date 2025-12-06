@@ -1,0 +1,524 @@
+/**
+ * AIF Course Data - Full Content
+ * Structured for teleprompter-style presentation
+ */
+
+export interface Paragraph {
+  id: string;
+  text: string;
+  type: 'intro' | 'concept' | 'example' | 'list' | 'takeaway';
+}
+
+export interface Section {
+  id: string;
+  title: string;
+  paragraphs: Paragraph[];
+}
+
+export interface Lesson {
+  id: string;
+  title: string;
+  sections: Section[];
+  keywords: string[];
+}
+
+export interface Module {
+  id: string;
+  title: string;
+  lessons: Lesson[];
+}
+
+// Helper to split content into sections with paragraphs
+function parseContent(content: string, lessonId: string, sectionTitles: string[]): Section[] {
+  const blocks = content.split('\n\n').filter(b => b.trim());
+  const sections: Section[] = [];
+  let currentSection: Section | null = null;
+  let paragraphIndex = 0;
+
+  // Calculate paragraphs per section (distribute evenly)
+  const paragraphsPerSection = Math.ceil(blocks.length / sectionTitles.length);
+  let sectionIndex = 0;
+
+  blocks.forEach((block, idx) => {
+    // Start a new section if needed
+    if (idx % paragraphsPerSection === 0 && sectionIndex < sectionTitles.length) {
+      if (currentSection) {
+        sections.push(currentSection);
+      }
+      currentSection = {
+        id: `${lessonId}-s${sectionIndex}`,
+        title: sectionTitles[sectionIndex],
+        paragraphs: []
+      };
+      sectionIndex++;
+    }
+
+    const trimmed = block.trim();
+    let type: Paragraph['type'] = 'concept';
+
+    // Determine type based on content patterns
+    if (idx === 0) type = 'intro';
+    else if (trimmed.startsWith('-') || trimmed.includes('\n-')) type = 'list';
+    else if (trimmed.toLowerCase().includes('example:') || trimmed.includes('Example:')) type = 'example';
+    else if (trimmed.toLowerCase().includes('outcome') || trimmed.toLowerCase().includes('takeaway')) type = 'takeaway';
+
+    if (currentSection) {
+      currentSection.paragraphs.push({
+        id: `${lessonId}-p${paragraphIndex}`,
+        text: trimmed,
+        type
+      });
+    }
+    paragraphIndex++;
+  });
+
+  // Push the last section
+  if (currentSection) {
+    sections.push(currentSection);
+  }
+
+  return sections;
+}
+
+export const courseData: Module[] = [
+  {
+    id: 'module-1',
+    title: 'AI Fundamentals',
+    lessons: [
+      {
+        id: '1.1',
+        title: 'What is AIF',
+        keywords: ['AI', 'business', 'outcomes', 'create', 'improve', 'distribute', 'foundation'],
+        sections: parseContent(`What is AIF and how does it help you
+
+The ideal outcome of this lesson is to set the foundation.
+
+The main outcomes of the program are:
+
+To understand business fundamentals before learning how to use AI to apply them. You don't make money because you're "good at AI", you make money because AI helps you do certain things that make money.
+
+To learn how to identify real problems and create AI-powered solutions.
+
+Build and launch offers based on those solutions, whether digital products, SaaS tools, or service packages.
+
+Understand and apply distribution methods using social media and other channels.
+
+Learn how AI systems actually function so you can use them efficiently and avoid common pitfalls.
+
+Join a community that shares insights, methods, and results in real-world business applications of AI.
+
+AIF focuses on giving you the minimum information needed to operate effectively. The lessons are structured to move you toward one of three outcomes: creating something new, improving an existing system, or distributing more effectively.`, '1.1', [
+          'INTRODUCTION',
+          'CORE OUTCOMES',
+          'THE APPROACH'
+        ])
+      },
+      {
+        id: '1.2',
+        title: 'LLM Fundamentals',
+        keywords: ['token', 'prediction', 'context', 'bias', 'autocomplete', 'sequence', 'LLM'],
+        sections: parseContent(`LLM Fundamentals - this is what makes context important for every AI task
+
+The Outcome You Want: Use AI to help you in business. Building an automation workflow, creating a customer support agent, generating marketing assets.
+
+The Blocker: They do not understand what "token prediction" does and the implications of prediction. Which means you can't engineer the context they need, for the outcome they want. Since LLMs power every AI tool, agent, automation etc - context engineering is a core dependency in all AI use.
+
+Fundamental 1: Token-by-token prediction
+
+What it is: The model takes the input it has in its context window, then using essentially a very advanced autocomplete trained on great amounts of data.
+
+For the next position (first letter in the reply you get after a prompt), it assigns probabilities to possible tokens. Once a token is selected (based on decoding settings), that token is added to the sequence. The process repeats until a stop signal.
+
+Best for understanding that: The model is not "planning paragraphs" ahead of time. Every word you see is a local choice conditioned on the current sequence. Small changes to input can change the entire continuation.
+
+Why it matters for context engineering: Whatever is in the input right now can influence every next step. If an important detail isn't inside the sequence, it cannot affect prediction. Your structure and ordering of information change how the continuation unfolds.
+
+Practical implications: You can steer the flow by controlling what appears earlier vs later. You can reduce drift by keeping instructions and constraints close to where the work happens. You can debug outputs by asking yourself: "what additional context would have made it impossible to get this reply"
+
+Fundamental 2: Bias
+
+What it is: The model has internal "bias". Models from different providers like Claude, OpenAI and Grok have noticeable different behaviors. Languages, stacks, styles, social scripts, patterns of explanation. Alignment layers add safety and tone preferences.
+
+Bias affects the output a lot: It affects how to interpret your prompt. It affects which approach it picks to solve a task. It affects what level of detail and rigor it defaults to.
+
+Best for understanding that: If you say nothing about style, it will default to whatever it considers is "most common" in its training. If you're vague about constraints, it will use typical patterns, not your specific reality. If you don't define what "good" looks like, it will invent its own standard.
+
+Fundamental 3: What the model actually sees as "context"
+
+System instructions, your latest message, recent chat history that fits, and any text you inject (docs, snippets, tool output, profiles, etc.). Context is: what other info does the model have besides straight from factory.`, '1.2', [
+          'THE PROBLEM',
+          'TOKEN PREDICTION',
+          'MODEL BIAS',
+          'CONTEXT DEFINITION'
+        ])
+      },
+      {
+        id: '1.3',
+        title: 'Context Windows & Token Economy',
+        keywords: ['context window', 'tokens', 'memory', 'cost', 'concise', 'capacity'],
+        sections: parseContent(`Context Windows & Token Economy
+
+What this lesson is: A simple, accurate breakdown of LLM limits (capacity and cost). It covers how AI providers handle memory and the constraints students must work within.
+
+1. Context Window
+
+Definition: The amount of information an LLM can process at once.
+
+Mental Model: Works like short-term memory with a fixed cap. If you overload it, earlier parts get dropped or the reply cuts off.
+
+Practical Behavior: Keep conversations focused. Start a fresh thread when switching to a new project or when the chat gets bloated to avoid "forgetting."
+
+2. Token Economy
+
+Definition: LLMs process and bill on tokens, not characters or words.
+
+Mental Model: Roughly 4 characters or 0.75 words per token.
+
+Impact: Longer inputs and outputs cost more and eat into the context window.
+
+Strategy: Be concise but specific. Remove fluff, but keep high-signal context.
+
+3. Cost & Quality Tradeoff
+
+The Balance: Longer conversations cost more tokens. Good context is worth spending tokens on; random background noise is not.
+
+Goal: Aim for "minimum tokens that still give the model exactly what it needs."
+
+4. Learning Outcomes
+
+Explain simply what a context window is and why it matters. Recognize that even if it seems like the memory is all there, it might have gone away due to context compression. Start managing your context better immediately.`, '1.3', [
+          'UNDERSTANDING LIMITS',
+          'TOKEN ECONOMY',
+          'COST MANAGEMENT'
+        ])
+      },
+      {
+        id: '1.4',
+        title: 'Context Engineering',
+        keywords: ['control context', 'information context', 'behavior', 'style', 'facts'],
+        paragraphs: parseContent(`Context Engineering
+
+So you now know how LLMs actually generate text (token-by-token) and that they only work with what fits inside their context window.
+
+The question is: how do you control what the model sees and how it behaves so you get the outcome you actually want?
+
+Two Categories of Context:
+
+1. Control Context (How it should "behave")
+
+What it does: Controls how the LLM generates.
+
+Examples: Brand voice samples, Style guidelines, Constraints like "be concise", "short sentences", "no fluff", Examples showing good vs. bad outputs.
+
+Mechanism: Provides patterns for the LLM to match and bias toward. Steers tone, depth, pacing, and structure.
+
+2. Information Context (Factual Grounding)
+
+What it does: Provides the "what" for the LLM to work with.
+
+Examples: Business details and offer specifics, Product features and pricing, Target market, positioning, constraints, Code architecture, APIs, data to analyze.
+
+Mechanism: Gives the LLM concrete facts and constraints to incorporate. Reduces guessing about your actual situation.
+
+The Key Insight: You need both for every task
+
+Example: Writing a landing page
+
+Control Context: "Write in a direct, no-BS style. Short sentences. Punchy headlines."
+
+Information Context: "Our product is an AI automation tool for e-commerce brands doing $1M–$10M/year. It saves around 20 hours/week."
+
+Result with both: Copy that sounds like you and accurately describes your product.
+
+Result with only control context: Copy that sounds like you, but gets product details wrong.
+
+Result with only information context: Copy that lists correct facts but feels generic and off-brand.`, '1.4')
+      },
+      {
+        id: '1.5',
+        title: 'Claude Skills 101',
+        keywords: ['Skill', 'reusable', 'instructions', 'references', 'consistent', 'workflow'],
+        paragraphs: parseContent(`Claude Skills 101
+
+Outcome: Students understand what Claude Skills are. They see how Skills turn one good setup (instructions + context) into something reusable.
+
+Blocker: Even with context profiles, they still restate instructions in every chat, manually attach the right docs each time, get inconsistent behavior because setups change slightly.
+
+What this lesson teaches:
+
+1. What a Skill is
+
+A reusable workflow that combines: Instructions (what the assistant should do and how) and References (which context files it should always load).
+
+2. Why Skills matter in this system
+
+Set up once, reuse many times. No more copy-pasting the same profile and instructions. More consistent outputs across sessions and users. Lets them build a small library of "AI workers" for specific jobs.
+
+3. How to create a Skill
+
+Use a "Skill-Creator" skill to build new skills systematically.
+
+4. Common skill use cases
+
+Copywriting (landing pages, emails, posts). Offer breakdown and research. Product/system design helpers. Support and documentation helpers.`, '1.5')
+      },
+      {
+        id: '1.6',
+        title: 'AI Tools for Every Use-Case',
+        keywords: ['text', 'image', 'video', 'audio', 'code', 'tools', 'Claude', 'Cursor'],
+        paragraphs: parseContent(`Overview of AI Tools for Every Use-Case
+
+Learning Outcome: Know which AI tools to use for different business needs.
+
+Current Status: High-level awareness only. We dive deep into specific tools in later modules when the student actually needs them.
+
+1. Text Generation
+
+Claude, Gemini - the foundation of most AI work.
+
+2. Image Generation
+
+Examples: Nanobanana Pro, Midjourney (High fidelity), Higgsfield Soul (Character consistency).
+
+3. Video Generation
+
+Examples: Sora 2 and Veo 3.1 (Both SOTA models), Qwen, Hailluo.
+
+4. Audio Generation
+
+Example: ElevenLabs (mainstream, user-friendly AI voices) compared to getting open-source specialized AI voices like ones made specifically for VSL/Ecom that can generate 30 min at once.
+
+5. Coding tools
+
+Examples: Cursor (Editor), Lovable (no code AI coding platform), Claude CLI (Coding and multipurpose agent).`, '1.6')
+      }
+    ]
+  },
+  {
+    id: 'module-2',
+    title: 'Problem & Solution Discovery',
+    lessons: [
+      {
+        id: '2.1',
+        title: 'Understanding Problems, Desires, Solutions',
+        keywords: ['desires', 'money', 'time', 'status', 'problem', 'bridge', 'solution'],
+        paragraphs: parseContent(`Understanding Problems, Desires, Solutions
+
+Learning Outcome: Understand what drives all purchasing decisions and how to identify valuable problems to solve.
+
+The foundation of all business: People buy to get what they want. Not what you want. What THEY want. If you don't understand what they want, you can't sell them anything.
+
+What do people want? Everything boils down to a few core desires:
+
+Make money - Get richer, increase income, grow wealth.
+
+Save money - Keep more of what they have, reduce costs.
+
+Save time - Get more done, automate, eliminate waste.
+
+Status/attraction - Be respected, be attractive, gain influence.
+
+Every purchase traces back to one of these.
+
+The bridge metaphor: Think of a sketchy rope bridge across a canyon. $100 on the other side = probably not worth crossing. $1,000,000 on the other side = you'd cross it. The bridge (your solution) is the same. The value changed based on what's on the other end (the desire).
+
+Your job as a business owner: Understand what your audience desires, then build bridges to those desires. This is universal business knowledge. AI just helps you build the bridges faster.
+
+What is a problem? A problem is anything between someone and their desire. That's it.
+
+Example: They want to make $10k/month (desire). They don't know how to get customers (problem). Your offer teaches them to get customers (solution/bridge).
+
+Surface problems vs root problems:
+
+Most people solve surface problems. The real opportunity is in root problems.
+
+Surface: "I need more traffic to my website"
+
+Root: "I don't know how to position my offer so people want to click"
+
+Solving surface problems = competing with everyone. Solving root problems = less competition, more value.
+
+Solution formats: The same solution can be packaged different ways:
+
+Course teaching Facebook ads (info). Done-for-you ad management (service). Software that automates ad creation (tool).
+
+Same problem, different bridges. All can work.
+
+Solution sequences - the backend:
+
+Solve problem #1 = first product. They hit problem #2 = second product (upsell). You're building a "problem ladder" they climb. Each rung is a product.`, '2.1')
+      },
+      {
+        id: '2.2',
+        title: 'Finding Problems from Your Own Experience',
+        keywords: ['experience', 'achievements', 'pain', 'proof', 'filter', 'authentic'],
+        paragraphs: parseContent(`Finding Problems from Your Own Experience
+
+Learning Outcome: Identify 3-5 problems you've personally solved that could become offers.
+
+Why this works:
+
+You understand the pain (you felt it). You know the solution works (you did it). You have proof (your results). You can explain it authentically (it's your story).
+
+The alternative: Solve problems you think exist, build something nobody wants, waste 3 months, give up.
+
+Step 1: What have you achieved? (10 minutes)
+
+Think about times you: Made money doing something specific. Saved significant time with a system you built. Built something from scratch that worked. Overcame a major obstacle others struggle with.
+
+Write down 5-10 achievements. Don't filter yet.
+
+Step 2: What problems did you overcome? (10 minutes)
+
+For each achievement, ask: What blocked me initially? What did I struggle with for months? What breakthrough changed everything? What do others still struggle with that I figured out?
+
+Step 3: Quick filter - Does it connect to money/time/status? (5 minutes)
+
+Delete anything that doesn't clearly connect to money, time, or status.
+
+Step 4: The hidden problem check (5 minutes)
+
+Is this what people think their problem is? (surface problem) Or is this the REAL problem underneath? (root problem)
+
+Root problems = less competition, more value.
+
+Deliverable: A list of 3-5 problems you've solved that connect clearly to money/time/status.`, '2.2')
+      },
+      {
+        id: '2.3',
+        title: 'Validating Market Desire & Size',
+        keywords: ['validation', 'market', 'desire depth', 'competition', 'research', 'AI'],
+        paragraphs: parseContent(`Validating Market Desire & Size - Using AI for Real Market Research
+
+Learning Outcome: Validate that your problem represents a real, profitable market by researching desire depth and market size using AI tools.
+
+The Traditional Approach (What Most People Get Wrong):
+
+Most people think validation means: "Search Reddit for complaints." That's tactical, not strategic.
+
+Real validation answers:
+
+Desire depth: Is this a burning problem that connects to money/time/status?
+
+Market size: How much is spent solving this problem annually?
+
+Competition health: Are competitors making money (proof of market) or struggling?
+
+Your advantage: Can you differentiate on approach, positioning, or solution format?
+
+Example of real validation:
+
+Problem: "Neck and knee pain."
+
+Do you see people complaining on Twitter? Not really.
+
+Do people pay $50K+ for surgeries and physical therapy? Absolutely.
+
+Market size: $100B+ healthcare industry.
+
+This is a massive, proven market—whether or not you see "complaints."
+
+The AI Advantage in Market Research:
+
+Chain AI tools to gather data at scale (competitor analysis, pricing research, customer review mining).
+
+Use context profiles to control analysis quality (your market expertise + AI speed).
+
+Synthesize patterns humans would miss (analyze 10,000 reviews in 10 minutes).
+
+If you're bad at market research, AI just helps you be bad faster. You need what to look for first.`, '2.3')
+      },
+      {
+        id: '2.4',
+        title: 'Identifying Why People Will Buy',
+        keywords: ['value gap', 'current state', 'desired state', 'edges', 'ROI', 'advantage'],
+        paragraphs: parseContent(`Identifying Why People Will Buy Your Solution
+
+What this lesson is: Understanding the value gap between current problem and desired future that creates willingness to pay, then identifying any edges you have.
+
+1. The Value Gap (Why Anyone Would Pay)
+
+Current State Mapping:
+
+Definition: Where they are now with this problem - the daily pain.
+
+Components: Money lost, time wasted, opportunities missed, emotional cost.
+
+Key Exercise: Calculate the real cost - get specific numbers.
+
+Example: Freelancer at $2k/month wanting $15k/month = $13k gap.
+
+Desired State Mapping:
+
+Definition: Where they want to be - the transformation.
+
+Components: Revenue gained, time saved, status achieved, freedom unlocked.
+
+Example: $15k/month difference = $180k/year value created.
+
+Value Calculation:
+
+If you create $100k value, charging $10k = 10x ROI for them.
+
+2. Your Edges (What Advantages You Have)
+
+Knowledge: What you know others don't.
+
+Experience: What you've done others haven't.
+
+Access: What you can reach others can't.
+
+Technical: What you can build others can't.
+
+Trust: Why people believe you.
+
+Process: Systems/methods you've developed.
+
+Edges compound - you want to preferably be using as many of your edges at all times.`, '2.4')
+      },
+      {
+        id: '2.5',
+        title: 'Creating Your Solution Context File',
+        keywords: ['context file', 'documentation', 'strategy', 'problems', 'value chain'],
+        paragraphs: parseContent(`Creating Your Solution Context File & Strategic Format Choice
+
+What this lesson is: Documenting your solution strategy and edges in a context file, then choosing format based on strategic leverage.
+
+Solution Context File Structure:
+
+1. Problems
+
+Surface problem (what they say). Real problem (what it is). Adjacent problems (what else breaks). Root cause (why it exists).
+
+2. Value Chain Mapping
+
+Current state costs. Transformation value. Downstream value unlocked. Total ecosystem value.
+
+3. Solution Strategy
+
+Your method. Why it works (mechanism). What makes it defensible. Future development potential.`, '2.5')
+      }
+    ]
+  }
+];
+
+// Get all lessons flat
+export function getAllLessons(): (Lesson & { moduleTitle: string })[] {
+  return courseData.flatMap(module =>
+    module.lessons.map(lesson => ({
+      ...lesson,
+      moduleTitle: module.title
+    }))
+  );
+}
+
+// Get all keywords for highlighting
+export function getAllKeywords(): string[] {
+  const keywords = new Set<string>();
+  courseData.forEach(module => {
+    module.lessons.forEach(lesson => {
+      lesson.keywords.forEach(kw => keywords.add(kw.toLowerCase()));
+    });
+  });
+  return Array.from(keywords);
+}
