@@ -37,19 +37,18 @@ export interface Module {
   lessons: Lesson[];
 }
 
-// Import markdown files as text (Bun handles this at build time)
-// Using Bun's text loader for .md files
-import lesson11 from './content/module-1/lesson-1.1.md' with { type: 'text' };
-import lesson12 from './content/module-1/lesson-1.2.md' with { type: 'text' };
-import lesson13 from './content/module-1/lesson-1.3.md' with { type: 'text' };
-import lesson14 from './content/module-1/lesson-1.4.md' with { type: 'text' };
-import lesson15 from './content/module-1/lesson-1.5.md' with { type: 'text' };
-import lesson16 from './content/module-1/lesson-1.6.md' with { type: 'text' };
-import lesson21 from './content/module-2/lesson-2.1.md' with { type: 'text' };
-import lesson22 from './content/module-2/lesson-2.2.md' with { type: 'text' };
-import lesson23 from './content/module-2/lesson-2.3.md' with { type: 'text' };
-import lesson24 from './content/module-2/lesson-2.4.md' with { type: 'text' };
-import lesson25 from './content/module-2/lesson-2.5.md' with { type: 'text' };
+// Import markdown files as text using Vite's ?raw loader
+import lesson11 from './content/module-1/lesson-1.1.md?raw';
+import lesson12 from './content/module-1/lesson-1.2.md?raw';
+import lesson13 from './content/module-1/lesson-1.3.md?raw';
+import lesson14 from './content/module-1/lesson-1.4.md?raw';
+import lesson15 from './content/module-1/lesson-1.5.md?raw';
+import lesson16 from './content/module-1/lesson-1.6.md?raw';
+import lesson21 from './content/module-2/lesson-2.1.md?raw';
+import lesson22 from './content/module-2/lesson-2.2.md?raw';
+import lesson23 from './content/module-2/lesson-2.3.md?raw';
+import lesson24 from './content/module-2/lesson-2.4.md?raw';
+import lesson25 from './content/module-2/lesson-2.5.md?raw';
 
 // Build course data from markdown at module load time
 export const courseData: Module[] = [

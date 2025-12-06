@@ -1,16 +1,23 @@
 {
   "name": "aif-course-website",
-  "module": "index.ts",
   "type": "module",
   "private": true,
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
   "devDependencies": {
     "@playwright/test": "^1.57.0",
     "@types/bun": "latest",
     "@types/js-yaml": "^4.0.9",
+    "@types/node": "^22.0.0",
     "@types/react": "^19.2.7",
     "@types/react-dom": "^19.2.3",
+    "@vitejs/plugin-react": "^4.3.4",
     "playwright": "^1.57.0",
-    "tailwindcss": "^4.1.17"
+    "tailwindcss": "^4.1.17",
+    "vite": "^6.0.3"
   },
   "peerDependencies": {
     "typescript": "^5"
